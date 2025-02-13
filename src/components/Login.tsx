@@ -1,25 +1,28 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useSearchParams } from "react-router-dom";
 
 function Login() {
-  const params = useParams();
+  const { loginWithRedirect } = useAuth0();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    console.log(params);
-  }, [params]);
+    const invitation = searchParams.get("invitation");
+    const organization = searchParams.get("organization");
 
-  const handleLogin = async () => {
-    // Pass the slug in the organization parameter if using Auth0 organizations
-    // or in the custom param if you're storing it differently.
-    // await loginWithRedirect({ organization: orgSlug });
-  };
+    if (invitation && organization) {
+      loginWithRedirect({
+        authorizationParams: {
+          invitation,
+          organization,
+        },
+      });
+    } else {
+      loginWithRedirect();
+    }
+  }, [searchParams, loginWithRedirect]);
 
-  return (
-    <div>
-      <h1>Welcome to General Login</h1>
-      <button onClick={handleLogin}>Login</button>
-    </div>
-  );
+  return <div>Redirecting to login...</div>;
 }
 
 export default Login;
